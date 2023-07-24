@@ -1,13 +1,33 @@
 const drinksModel = require('../models/drinksModel')
 const DrinkModel = require('../models/drinksModel')
 const asyncHandler = require('express-async-handler')
+const DrinkService = require('../services/DrinkService')
 
 class DrinksController {
 
 
+    // getAll = asyncHandler( async(req, res)=> {
+    //     // res.send('getAll')
+    //     const drinks =  await drinksModel.find({})
+    //     res.status(201).json({
+    //         code: 201,
+    //         data: {
+    //             drinks,
+    //             qty: drinks.length,
+    //         }
+    //     })
+    //     res.json(result)
+
+    // })
+
     getAll = asyncHandler( async(req, res)=> {
         // res.send('getAll')
-        const drinks =  await drinksModel.find({})
+        
+        const drinks =  await DrinkService.all()
+        if (!drinks) {
+            res.status(400)
+            throw new Error('Unable to fetch')
+        }
         res.status(201).json({
             code: 201,
             data: {
