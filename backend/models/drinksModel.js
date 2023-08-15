@@ -18,6 +18,7 @@ const drink = new Schema({
             type: Boolean,
         },
 
+
 })
 
 module.exports = model('drinks', drink )

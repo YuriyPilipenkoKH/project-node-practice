@@ -1,5 +1,5 @@
-const drinksModel = require('../models/drinksModel')
-const DrinkModel = require('../models/drinksModel')
+
+
 const asyncHandler = require('express-async-handler')
 const DrinkService = require('../services/DrinkService')
 
@@ -35,13 +35,26 @@ class DrinksController {
                 qty: drinks.length,
             }
         })
-        res.json(result)
+        // res.json(result)
 
     })
 
-    getOne =(req, res)=> {
-        res.send('getOne')
-    }
+    getOne =asyncHandler( async(req, res)=> {
+        // res.send('getOne')
+        const {id} = req.params 
+        const drink =  await DrinkService.one({id})
+
+        if(!drink) {
+            res.status(400)
+            throw new Error('Drink not found')
+        }
+        res.status(201).json({
+            code: 201,
+            drink
+         
+        })
+
+    })
 
     addDrink = asyncHandler( async (req, res)=> {
         const {name, value} = req.body
@@ -50,23 +63,44 @@ class DrinksController {
             throw new Error('Provide all required fields')
         }
 
-        const drink =  await DrinkModel.create({...req.body})
+        const drink =  await DrinkService.add({...req.body})
+        // const drink =  await DrinkModel.create({...req.body})
 
-        res.status(200).json({
-            code: 200,
+        res.status(201).json({
+            code: 201,
             data: {
                 drink,
             }
         })
     })
 
-    updateDrink =(req, res)=> {
-        res.send('updateDrink')
-    }
+    updateDrink =  asyncHandler( async (req, res)=> {
+        // res.send('updateDrink')
+        const {id} = req.params 
+        const updatedDrink =  await DrinkService.update({id, body: {...req.body}})
 
-    removeDrink =(req, res)=> {
-        res.send('removeDrink')
-    }
+        res.status(201).json({
+            code: 201,
+            data: {
+                updatedDrink,
+            },
+            message: 'Successfully updated'
+        })
+    })
+
+    removeDrink = asyncHandler( async (req, res)=> {
+        const {id} = req.params 
+        const drinkToDelete =  await DrinkService.remove({ id })
+
+        res.status(201).json({
+            code: 201,
+            data: {
+                drinkToDelete,
+            },
+            message: 'Successfully deleted'
+        })
+        
+    })
 
 }
 
