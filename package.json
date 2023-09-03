@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon backend/server",
-    "client": "npm start --prefix frontend"
+    "client": "npm start --prefix frontend",
+    "wp": "webpack --mode=development",
+    "wp:prod": "webpack --mode=production"
+
   },
   "repository": {
     "type": "git",
@@ -28,6 +31,7 @@
     "express-handlebars": "^7.1.2",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.4.0",
+    "nodemailer": "^6.9.4",
     "nodemon": "^3.0.1"
   }
 }

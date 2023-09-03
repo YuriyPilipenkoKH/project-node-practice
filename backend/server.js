@@ -13,6 +13,7 @@ const bcrypt = require('bcryptjs')
 const jwt  = require('jsonwebtoken')
 const authMiddleware = require('./middlewares/authMiddleware')
 const rolesSchema = require('./models/rolesModel')
+const sendEmail = require('./services/sendEmail')
 
 
 console.log(require('dotenv').config({path: configPath}))
@@ -20,6 +21,8 @@ console.log(require('dotenv').config({path: configPath}))
 // console.log(process.env.DB_HOST)
 
 const app = express()
+
+app.use(express.static('public'));
 
 // set template engine
 app.engine('handlebars', engine());
@@ -34,7 +37,36 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
+app.get('/about', (req, res) => {
+    res.render('about');
+  });
+  
+app.get('/contact', (req, res) => {
+    res.render('contact');
+  });
+  
+app.post('/sent', async (req, res) => {
+    // res.send(req.body);
+    res.render('sent', {
+      message: 'Contact form successfully sent',
+      name: req.body.userName,
+      email: req.body.userEmail,
+    });
+  
+    await sendEmail(req.body);
+  });
+  
+
 app.use('/api/v1', require('./routes/drinksRoutes') )
+
+app.get('/signup', (req, res) => {
+    res.render('signup');
+  });
+  
+  app.get('/signin', (req, res) => {
+    res.render('signin');
+  });
+  
 
 app.post('/register', asyncHandler( async (req, res)=> {
     const {email, password} = req.body
@@ -61,12 +93,14 @@ app.post('/register', asyncHandler( async (req, res)=> {
         roles: [roles.value]
      }) 
 
-     res.status(201).json({
-        code:201,
-        data: {
-            email: user.email
-        }
-     })
+    //  res.status(201).json({
+    //     code:201,
+    //     data: {
+    //         email: user.email
+    //     }
+    //  })
+    res.render('register');
+
 
 }) )
 
@@ -106,13 +140,14 @@ app.post('/login', asyncHandler( async (req, res)=> {
     user.token = token 
     await user.save()
 
-    res.status(201).json({
-        code:201,
-        data: {
-            email: user.email,
-            token: user.token,
-        }
-     })
+    // res.status(201).json({
+    //     code:201,
+    //     data: {
+    //         email: user.email,
+    //         token: user.token,
+    //     }
+    //  })
+    res.render('register');
 
 }) )
 
@@ -139,6 +174,10 @@ function generateToken(data) {
     const payload = {...data}
     return jwt.sign(payload, 'pizza', {expiresIn: '24 h'})
 }
+
+app.use('*', (req, res, next) => {
+    res.render('notfound');
+  });
 
 app.use(errorHandler)
 
